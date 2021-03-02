@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -31,5 +32,41 @@ public:
 
 
 int main() {
+    string lexemeFileNameInput;
+    cout << "Enter the filename containing your token/lexeme pairs: ";
+    cin >> lexemeFileNameInput;
+
+    ifstream lexemeFileIn(lexemeFileNameInput);
+    if(!lexemeFileIn){
+        cout << "Error Opening File " << lexemeFileNameInput << endl;
+        exit(-1);
+    }
+
+    string sourceFileNameInput;
+    cout << "Enter the filename containing your code: ";
+    cin >> sourceFileNameInput;
+
+    ifstream sourceFileIn(sourceFileNameInput);
+    if(!sourceFileIn){
+        cout << "Error Opening File " << sourceFileNameInput << endl;
+        exit(-1);
+    }
+
+    string fileNameOut;
+    cout << "Enter the filename to output your lexical analysis: ";
+    cin >> fileNameOut;
+
+    ofstream fileOut(fileNameOut);
+    if(!fileOut){
+        cout << "Error Opening File " << fileNameOut << endl;
+        exit(-1);
+    }
+
+    LexAnalyzer lexAnal(lexemeFileIn);
+
+    lexAnal.scanFile(sourceFileIn, fileOut);
+
+    fileOut.close();
+
     return 0;
 }
