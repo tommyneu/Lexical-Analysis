@@ -14,18 +14,33 @@ private:
 	// other private methods
 public:
 
-    LexAnalyzer(istream& infile);
     // pre: parameter refers to open data file consisting of token and
     // lexeme pairs i.e.  s_and and t_begin begin t_int 27.  Each pair    // appears on its own input line.
     // post: tokenmap has been populated
+    LexAnalyzer(istream& infile){
+        string token;
+        string lexeme;
+        while(!infile.eof()){
+            infile >> token;
+            infile >> lexeme;
 
-    void scanFile(istream& infile, ostream& outfile);
+            tokenmap[token] = lexeme;
+        }
+    };
+
     // pre: 1st parameter refers to an open text file that contains source
     // code in the language, 2nd parameter refers to an open empty output
     // file
     // post: If no error, the token and lexeme pairs for the given input
     // file have been written to the output file.  If there is an error,
     // the incomplete token/lexeme pairs, as well as an error message have // written to the output file.  A success or fail message has printed // to the console.
+    void scanFile(istream& infile, ostream& outfile){
+        string line = "";
+        while(!infile.eof()){
+            infile >> line;
+            //outfile << line;
+        }
+    };
 };
 
 
