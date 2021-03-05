@@ -1,4 +1,6 @@
 main()
-   begin
-     output("hello world");
-   end main;
+  begin
+    output("Hello World");
+    int x=3;
+    x<=4;
+  end main;

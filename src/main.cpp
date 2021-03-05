@@ -132,6 +132,16 @@ private:
         return !isalnum(charToCheck);
     }
 
+    void printToPage(ostream& outfile){
+        if(lexemes.size() == tokens.size()){
+            for(int i = 0; i < lexemes.size(); i++){
+                outfile << tokens[i] << " : " << lexemes[i] << endl;
+            }
+        }else{
+            //! some error
+        }
+    }
+
 
 
 public:
@@ -157,11 +167,63 @@ public:
     // file have been written to the output file.  If there is an error,
     // the incomplete token/lexeme pairs, as well as an error message have // written to the output file.  A success or fail message has printed // to the console.
     void scanFile(istream& infile, ostream& outfile){
-        string line = "";
-        while(!infile.eof()){
-            infile >> line;
-            //outfile << line;
+        string currentLine;
+        int lineNumber = 0;
+
+        string totalString;
+        bool stringOn = false;
+        int stringStartLine;
+
+        string errors = "";
+
+        infile >> currentLine;
+        lineNumber++;
+        while(!infile.eof() && errors.size() == 0){
+
+            //splits line by delimitors(symbols)
+            //it will check if symbol is a 2 length symbol
+            vector<string> splitString;
+            string currentLex = "";
+            for(int cCount = 0; cCount < currentLine.size(); cCount++){
+                if(isalnum(currentLine[cCount])){
+                    currentLex += string(1, currentLine[cCount]);
+                }else{
+                    if(currentLex != ""){
+                        splitString.push_back(currentLex);
+                        currentLex = "";
+                    }
+                    if(cCount < (currentLine.size() - 1)){
+                        if(checkIfValidSymbol(currentLine.substr(cCount, 2))){
+                            splitString.push_back(currentLine.substr(cCount, 2));
+                            cCount++;
+                        }else{
+                            splitString.push_back(string(1, currentLine[cCount]));
+                        }
+                    }else{
+                        splitString.push_back(string(1, currentLine[cCount]));
+                    }
+                }
+                if(cCount == (currentLine.size()-1) && currentLex != ""){
+                    splitString.push_back(currentLex);
+                }
+            }
+
+
+            cout << lineNumber << ": " << endl;
+            cout << "=================" << endl;
+            for(int i = 0; i < splitString.size(); i++){
+                cout << splitString[i] << endl;
+                //! logic for getting lex stuff
+            }
+            cout << endl;
+
+
+            infile >> currentLine;
+            lineNumber++;
         }
+
+        //!output errors
+        //!output lexical analysis
     };
 };
 
