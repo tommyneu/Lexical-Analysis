@@ -13,64 +13,37 @@ private:
 	map<string, string> tokenmap;  // valid lexeme/token pairs
 	// other private methods
 
-
-
-
-    //pre: 1st param word to check if it is a keyword
-    //post: returns if the word is a keyword
-    //desc: loops through all tokens and finds the ones starting with a t
-    //      it then checks if it matches with the word passed in
-    //      it will then return if it found a match or not
-    bool checkIfKeyword(string wordToCheck){
+    //pre:
+    //post:
+    //desc:
+    string getKeywordToken(string lexemeToCheck){
         map<string, string>::iterator mapStrStrIter;
-        bool keywordCheck = false;
+        string keywordToken = "";
 
         for(mapStrStrIter = tokenmap.begin(); mapStrStrIter != tokenmap.end(); mapStrStrIter++){
-            if((mapStrStrIter->first)[0] == 't' && (mapStrStrIter->second) == wordToCheck){
-                keywordCheck = true;
+            if((mapStrStrIter->first)[0] == 't' && (mapStrStrIter->second) == lexemeToCheck){
+                keywordToken = (mapStrStrIter->first);
             }
         }
 
-        return keywordCheck;
-    }
-    //overloaded in case we need to pass in a char
-    //pre: 1st param character to check if it is a keyword
-    //post: returns if the character is a keyword
-    //desc: converts the char to a string with length 1 and passes it the other checkIfKeyword
-    bool checkIfKeyword(char charToCheck){
-        return checkIfKeyword(string(1, charToCheck));
+        return keywordToken;
     }
 
-
-
-
-    //pre: 1st param string to check if it is a valid Symbol
-    //post: returns if the string is a valid Symbol
-    //desc: loops through all tokens and finds the ones starting with a s
-    //      it then checks if it matches with the string passed in
-    //      it will then return if it found a match or not
-    bool checkIfValidSymbol(string stringToCheck){
+    //pre:
+    //post:
+    //desc:
+    string getSymbolToken(string lexemeToCheck){
         map<string, string>::iterator mapStrStrIter;
-        bool symbolCheck = false;
+        string symbolToken = "";
 
         for(mapStrStrIter = tokenmap.begin(); mapStrStrIter != tokenmap.end(); mapStrStrIter++){
-            if((mapStrStrIter->first)[0] == 's' && (mapStrStrIter->second) == stringToCheck){
-                symbolCheck = true;
+            if((mapStrStrIter->first)[0] == 's' && (mapStrStrIter->second) == lexemeToCheck){
+                symbolToken = (mapStrStrIter->first);
             }
         }
 
-        return symbolCheck;
+        return symbolToken;
     }
-    //overloaded in case we need to pass in a char
-    //pre: 1st param character to check if it is a valid Symbol
-    //post: returns if the character is a valid Symbol
-    //desc: converts the char to a string with length 1 and passes it the other checkIfValidSymbol
-    bool checkIfValidSymbol(char charToCheck){
-        return checkIfValidSymbol(string(1, charToCheck));
-    }
-
-
-
 
     //pre: 1st param string to check if it starts with a digit
     //post: returns if the string starts with a digit
@@ -78,16 +51,6 @@ private:
     bool checkIfStaringWithNumber(string stringToCheck){
         return isdigit(stringToCheck[0]);
     }
-    //overloaded in case we need to pass in a char
-    //pre: 1st param character to check if is a digit
-    //post: returns if the char is a digit
-    //desc: uses the isdigit function to check if the character is a digit
-    bool checkIfStaringWithNumber(char charToCheck){
-        return isdigit(charToCheck);
-    }
-
-
-
 
     //pre: 1st param string to check if it only contains digits
     //post: returns if the string only contains digit
@@ -101,16 +64,6 @@ private:
         }
         return nonNumberCheck;
     }
-    //overloaded in case we need to pass in a char
-    //pre: 1st param character to check if is a digit
-    //post: returns if the char is a digit
-    //desc: uses the isdigit function to check if the character is a digit
-    bool checkIfAllNumber(char charToCheck){
-        return isdigit(charToCheck);
-    }
-
-
-
 
     //pre: 1st param string to check if it contains any symbols
     //post: returns if the string contains any symbols
@@ -124,14 +77,10 @@ private:
         }
         return symbolCheck;
     }
-    //overloaded in case we need to pass in a char
-    //pre: 1st param character to check if is a symbol
-    //post: returns if the char is a symbol
-    //desc: uses the isalnum function to check if the character is a not alphanumeric
-    bool checkIfThereAreSymbols(char charToCheck){
-        return !isalnum(charToCheck);
-    }
 
+    //pre:
+    //post:
+    //desc:
     void printToPage(ostream& outfile){
         if(lexemes.size() == tokens.size()){
             for(int i = 0; i < lexemes.size(); i++){
@@ -142,6 +91,130 @@ private:
         }
     }
 
+
+
+
+    //pre: 1st param is the line to be split
+    //     2nd param is the the vector to put the split parts of the string into
+    //
+    //post: the vector passed in as the 2nd param will be populated with 1st params parts
+    //      seperated by symbols
+    //
+    //desc: we take in a line of source code which has been split by spaces
+    //      we then loop through it and splits its parts by symbols
+    //      if we find a valid symbol of length two it will keep those together
+    void splitLine(string lineIn, vector<string>& splitLine){
+        string currentLex = "";
+        for(int cCount = 0; cCount < lineIn.size(); cCount++){
+            if(isalnum(lineIn[cCount])){
+                currentLex += string(1, lineIn[cCount]);
+            }else{
+                if(currentLex != ""){
+                    splitLine.push_back(currentLex);
+                    currentLex = "";
+                }
+                if(cCount < (lineIn.size() - 1)){
+                    if(getSymbolToken(lineIn.substr(cCount, 2)) != ""){
+                        splitLine.push_back(lineIn.substr(cCount, 2));
+                        cCount++;
+                    }else{
+                        splitLine.push_back(string(1, lineIn[cCount]));
+                    }
+                }else{
+                    splitLine.push_back(string(1, lineIn[cCount]));
+                }
+            }
+            if(cCount == (lineIn.size()-1) && currentLex != ""){
+                splitLine.push_back(currentLex);
+            }
+        }
+    }
+
+
+
+
+    //pre: 1st param currentLex is the current lexeme that is being analyzed
+    //     2nd param previousLex is the previous lexeme that was from right before
+    //     3nd param stringOn is a reference to the stringOn passed in to the method, this value may encompass multiple method calls
+    //     4rd param totalString is a reference to the totalString passed in, this value may encompass multiple method calls
+    //     5th param error is a reference to the errors which may occur during the analysis
+    //
+    //post: if the currentLex is a valid lexeme then it will populate the lexemes and tokens vectors
+    //      if there is a string then the stringOn and totalString will be altered accordingly
+    //      if currentLex is invalid it will change the text of error
+    //
+    //desc: this method will check currentLex and determine if it is valid or not and if there is an error.
+    //      It will also form strings which may take multiple lines of source code
+    void analyzeLex(string currentLex, int lineNumber, bool& stringOn, string& totalString, vector<string>& error){
+        if(stringOn){
+            if(currentLex == "\""){
+                stringOn = false;
+                addLexemeTokenPair(totalString, "t_str");
+                totalString = "";
+            }else{
+                totalString += currentLex;
+            }
+        }else{
+            if(currentLex == "\""){
+                stringOn = true;
+            }else{
+                if(getKeywordToken(currentLex) != ""){
+                    addLexemeTokenPair(currentLex, "t_"+currentLex);
+                }else{
+                    if(checkIfStaringWithNumber(currentLex)){
+                        if(checkIfAllNumber(currentLex)){
+                            addLexemeTokenPair(currentLex, "t_int");
+                        }else{
+                            error.push_back("Error invalid identifier on line " + to_string(lineNumber) + ": " + currentLex);
+                        }
+                    }else{
+                        if(checkIfThereAreSymbols(currentLex)){
+                            if(getSymbolToken(currentLex) != ""){
+                                addLexemeTokenPair(currentLex, getSymbolToken(currentLex));
+                            }else if(currentLex != " "){
+                                error.push_back("Error invalid symbol on line " + to_string(lineNumber) + ": " + currentLex);
+                            }
+                        }else{
+                            addLexemeTokenPair(currentLex, "t_id");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    //pre: 1st param lexemeIn is the lexeme to add to the vector lexemes
+    //     2nd param tokenIn is the token to be added to the vector tokens
+    //
+    //post: the vectors tokens and lexemes will be populated with one more value
+    //
+    //desc: this method will use the push_back method to add the parameters in to the vectors lexemes and tokens
+    void addLexemeTokenPair(string lexemeIn, string tokenIn){
+        lexemes.push_back(lexemeIn);
+        tokens.push_back(tokenIn);
+    }
+
+
+    //pre: 1st param error is any errors that may have occurred during the analysis
+    //     2nd param outfile is the output where the analysis will be printed
+    //
+    //post: outfile will have the analysis and errors printed to it
+    //
+    //desc: this method will first loop through all lexemes and tokens and print those to outfile
+    //      it will then print out an error if there was any
+    void printToOutput(vector<string>& errors, ostream& outfile){
+
+        //lexemes should be the same length as tokens
+        for(int tlCount = 0; tlCount < lexemes.size(); tlCount++){
+            outfile << tokens[tlCount] << " : " << lexemes[tlCount] << endl;
+        }
+
+        for(int eCount = 0; eCount < errors.size(); eCount++){
+            outfile << errors[eCount] << endl;
+        }
+    }
 
 
 public:
@@ -168,62 +241,31 @@ public:
     // the incomplete token/lexeme pairs, as well as an error message have // written to the output file.  A success or fail message has printed // to the console.
     void scanFile(istream& infile, ostream& outfile){
         string currentLine;
-        int lineNumber = 0;
+
+        int lineNumber = 1;
 
         string totalString;
         bool stringOn = false;
-        int stringStartLine;
 
-        string errors = "";
+        vector<string> errors;
 
-        infile >> currentLine;
-        lineNumber++;
-        while(!infile.eof() && errors.size() == 0){
-
-            //splits line by delimitors(symbols)
-            //it will check if symbol is a 2 length symbol
+        while(getline(infile, currentLine) && errors.size() == 0){
             vector<string> splitString;
-            string currentLex = "";
-            for(int cCount = 0; cCount < currentLine.size(); cCount++){
-                if(isalnum(currentLine[cCount])){
-                    currentLex += string(1, currentLine[cCount]);
-                }else{
-                    if(currentLex != ""){
-                        splitString.push_back(currentLex);
-                        currentLex = "";
-                    }
-                    if(cCount < (currentLine.size() - 1)){
-                        if(checkIfValidSymbol(currentLine.substr(cCount, 2))){
-                            splitString.push_back(currentLine.substr(cCount, 2));
-                            cCount++;
-                        }else{
-                            splitString.push_back(string(1, currentLine[cCount]));
-                        }
-                    }else{
-                        splitString.push_back(string(1, currentLine[cCount]));
-                    }
-                }
-                if(cCount == (currentLine.size()-1) && currentLex != ""){
-                    splitString.push_back(currentLex);
-                }
-            }
+            splitLine(currentLine, splitString);
 
-
-            cout << lineNumber << ": " << endl;
-            cout << "=================" << endl;
             for(int i = 0; i < splitString.size(); i++){
-                cout << splitString[i] << endl;
-                //! logic for getting lex stuff
+                analyzeLex(splitString[i], lineNumber, stringOn, totalString, errors);
             }
-            cout << endl;
 
-
-            infile >> currentLine;
             lineNumber++;
         }
 
-        //!output errors
-        //!output lexical analysis
+        if(stringOn){
+            addLexemeTokenPair(totalString, "t_str");
+            errors.push_back("Error string not closed");
+        }
+
+        printToOutput(errors, outfile);
     };
 };
 
@@ -234,9 +276,9 @@ int main() {
 
     //gets the filename of the lexeme file
     //and checks if that file exists
-    string lexemeFileNameInput;
-    cout << "Enter the filename containing your token/lexeme pairs: ";
-    cin >> lexemeFileNameInput;
+    string lexemeFileNameInput = "tokenlexemedata.txt";
+    // cout << "Enter the filename containing your token/lexeme pairs: ";
+    // cin >> lexemeFileNameInput;
 
     ifstream lexemeFileIn(lexemeFileNameInput);
     if(!lexemeFileIn){
@@ -247,9 +289,9 @@ int main() {
 
     //gets the filename of the source code
     //and checks if that file exists
-    string sourceFileNameInput;
-    cout << "Enter the filename containing your code: ";
-    cin >> sourceFileNameInput;
+    string sourceFileNameInput = "test.txt";
+    // cout << "Enter the filename containing your code: ";
+    // cin >> sourceFileNameInput;
 
     ifstream sourceFileIn(sourceFileNameInput);
     if(!sourceFileIn){
@@ -259,9 +301,9 @@ int main() {
 
     //gets the filename of the output file
     //and checks if that file exists
-    string fileNameOut;
-    cout << "Enter the filename to output your lexical analysis: ";
-    cin >> fileNameOut;
+    string fileNameOut = "output.txt";
+    // cout << "Enter the filename to output your lexical analysis: ";
+    // cin >> fileNameOut;
 
     ofstream fileOut(fileNameOut);
     if(!fileOut){

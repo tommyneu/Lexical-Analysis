@@ -1,6 +1,7 @@
 main()
   begin
     output("Hello World");
-    int x=3;
-    x<=4;
+    integer x=3;
+    if(x<=4);
+
   end main;
