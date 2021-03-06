@@ -145,7 +145,7 @@ private:
     //
     //desc: this method will check currentLex and determine if it is valid or not and if there is an error.
     //      It will also form strings which may take multiple lines of source code
-    void analyzeLex(string currentLex, int lineNumber, bool& stringOn, string& totalString, vector<string>& error){
+    void analyzeLex(string currentLex, int lineNumber, int& stringStartLine, bool& stringOn, string& totalString, vector<string>& error){
         if(stringOn){
             if(currentLex == "\""){
                 stringOn = false;
@@ -157,6 +157,7 @@ private:
         }else{
             if(currentLex == "\""){
                 stringOn = true;
+                stringStartLine = lineNumber;
             }else{
                 if(getKeywordToken(currentLex) != ""){
                     addLexemeTokenPair(currentLex, "t_"+currentLex);
@@ -243,6 +244,7 @@ public:
         string currentLine;
 
         int lineNumber = 1;
+        int stringStartLine;
 
         string totalString;
         bool stringOn = false;
@@ -254,7 +256,7 @@ public:
             splitLine(currentLine, splitString);
 
             for(int i = 0; i < splitString.size(); i++){
-                analyzeLex(splitString[i], lineNumber, stringOn, totalString, errors);
+                analyzeLex(splitString[i], lineNumber, stringStartLine, stringOn, totalString, errors);
             }
 
             lineNumber++;
@@ -262,7 +264,7 @@ public:
 
         if(stringOn){
             addLexemeTokenPair(totalString, "t_str");
-            errors.push_back("Error string not closed");
+            errors.push_back("Error string not closed on line " + to_string(stringStartLine));
         }
 
         printToOutput(errors, outfile);
