@@ -78,22 +78,6 @@ private:
         return symbolCheck;
     }
 
-    //pre:
-    //post:
-    //desc:
-    void printToPage(ostream& outfile){
-        if(lexemes.size() == tokens.size()){
-            for(int i = 0; i < lexemes.size(); i++){
-                outfile << tokens[i] << " : " << lexemes[i] << endl;
-            }
-        }else{
-            //! some error
-        }
-    }
-
-
-
-
     //pre: 1st param is the line to be split
     //     2nd param is the the vector to put the split parts of the string into
     //
