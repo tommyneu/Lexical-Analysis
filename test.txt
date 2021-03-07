@@ -1,7 +1,10 @@
-main()
+main() MAin
   begin
-    output("Hello World);
-    integer x=3;
+    output("Hello World");
+    integer mainT=3;
     if(x<=4);
+    if(x && 5);
+
+    x===23
 
   end main;
